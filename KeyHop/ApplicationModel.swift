@@ -1,5 +1,8 @@
 //
+//  ApplicationModel.swift
+//  KeyHop
 //
+//  Created by Devin AI on 2025-05-02.
 //
 
 import Foundation
