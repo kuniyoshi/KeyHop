@@ -1,7 +1,3 @@
-//
-//
-//
-
 import SwiftUI
 import SwiftData
 
@@ -11,21 +7,21 @@ struct KeybindingsDataView: View {
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     @State private var isEditing = false
+    @State private var selectedData: KeybindingsData?
     
     var body: some View {
-        NavigationSplitView {
+        VStack {
             List {
                 ForEach(keybindingsData) { data in
-                    NavigationLink {
-                        KeybindingsDataDetailView(data: data)
-                    } label: {
+                    Button(action: {
+                        selectedData = data
+                    }) {
                         Text(data.applicationPath)
                     }
                 }
                 .onDelete(perform: deleteItems)
                 .onMove(perform: moveItems)
             }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
             .toolbar {
                 ToolbarItem {
                     Button(action: addItem) {
@@ -40,8 +36,13 @@ struct KeybindingsDataView: View {
                     }
                 }
             }
-        } detail: {
-            Text("Select an item")
+            
+            if let selectedData = selectedData {
+                KeybindingsDataDetailView(data: selectedData)
+            } else {
+                Text("Select an item")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
         }
         .alert("Error", isPresented: $showErrorAlert) {
             Button("OK", role: .cancel) { }
@@ -73,46 +74,7 @@ struct KeybindingsDataView: View {
     }
 }
 
-struct KeybindingsDataDetailView: View {
-    @Bindable var data: KeybindingsData
-    @State private var showErrorAlert = false
-    @State private var errorMessage = ""
-    
-    var body: some View {
-        Form {
-            Section(header: Text("Application Details")) {
-                TextField("Application Path", text: $data.applicationPath)
-                    .onChange(of: data.applicationPath) {
-                        saveChanges()
-                    }
-                
-                TextField("Keybindings", text: $data.keybindings)
-                    .onChange(of: data.keybindings) {
-                        saveChanges()
-                    }
-            }
-        }
-        .navigationTitle("Edit Keybinding")
-        .alert("Error", isPresented: $showErrorAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(errorMessage)
-        }
-    }
-    
-    private func saveChanges() {
-        do {
-            try data.modelContext?.save()
-        } catch {
-            errorMessage = "Failed to save changes: \(error.localizedDescription)"
-            showErrorAlert = true
-        }
-    }
-}
-
-struct KeybindingsDataView_Previews: PreviewProvider {
-    static var previews: some View {
-        KeybindingsDataView()
-            .modelContainer(for: KeybindingsData.self, inMemory: true)
-    }
+#Preview {
+    KeybindingsDataView()
+        .modelContainer(for: KeybindingsData.self, inMemory: true)
 }
