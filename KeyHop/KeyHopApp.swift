@@ -13,7 +13,7 @@ struct KeyHopApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
-            ApplicationModel.self,
+            KeybindingsData.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -26,7 +26,16 @@ struct KeyHopApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TabView {
+                ContentView()
+                    .tabItem {
+                        Label("Items", systemImage: "list.bullet")
+                    }
+                KeybindingsDataView()
+                    .tabItem {
+                        Label("Keybindings", systemImage: "keyboard")
+                    }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

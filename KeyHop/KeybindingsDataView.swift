@@ -1,0 +1,127 @@
+//
+//
+//
+
+import SwiftUI
+import SwiftData
+
+struct KeybindingsDataView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Query private var keybindingsData: [KeybindingsData]
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
+    
+    var body: some View {
+        NavigationSplitView {
+            List {
+                ForEach(keybindingsData) { data in
+                    NavigationLink {
+                        KeybindingsDataDetailView(data: data)
+                    } label: {
+                        Text(data.applicationPath)
+                    }
+                }
+                .onDelete(perform: deleteItems)
+                .onMove(perform: moveItems)
+            }
+            .navigationSplitViewColumnWidth(min: 180, ideal: 200)
+            .toolbar {
+                ToolbarItem {
+                    Button(action: addItem) {
+                        Label("Add Item", systemImage: "plus")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    EditButton()
+                }
+            }
+        } detail: {
+            Text("Select an item")
+        }
+        .alert("Error", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+    
+    private func addItem() {
+        withAnimation {
+            do {
+                let newItem = KeybindingsData(applicationPath: "New Application", keybindings: "")
+                modelContext.insert(newItem)
+            } catch {
+                errorMessage = "Failed to add item: \(error.localizedDescription)"
+                showErrorAlert = true
+            }
+        }
+    }
+    
+    private func deleteItems(offsets: IndexSet) {
+        withAnimation {
+            do {
+                for index in offsets {
+                    modelContext.delete(keybindingsData[index])
+                }
+            } catch {
+                errorMessage = "Failed to delete item: \(error.localizedDescription)"
+                showErrorAlert = true
+            }
+        }
+    }
+    
+    private func moveItems(from source: IndexSet, to destination: Int) {
+        withAnimation {
+            do {
+                var updatedItems = keybindingsData
+                updatedItems.move(fromOffsets: source, toOffset: destination)
+                
+            } catch {
+                errorMessage = "Failed to move item: \(error.localizedDescription)"
+                showErrorAlert = true
+            }
+        }
+    }
+}
+
+struct KeybindingsDataDetailView: View {
+    @Bindable var data: KeybindingsData
+    @State private var showErrorAlert = false
+    @State private var errorMessage = ""
+    
+    var body: some View {
+        Form {
+            Section(header: Text("Application Details")) {
+                TextField("Application Path", text: $data.applicationPath)
+                    .onChange(of: data.applicationPath) {
+                        saveChanges()
+                    }
+                
+                TextField("Keybindings", text: $data.keybindings)
+                    .onChange(of: data.keybindings) {
+                        saveChanges()
+                    }
+            }
+        }
+        .navigationTitle("Edit Keybinding")
+        .alert("Error", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
+    }
+    
+    private func saveChanges() {
+        do {
+            try data.modelContext?.save()
+        } catch {
+            errorMessage = "Failed to save changes: \(error.localizedDescription)"
+            showErrorAlert = true
+        }
+    }
+}
+
+#Preview {
+    KeybindingsDataView()
+        .modelContainer(for: KeybindingsData.self, inMemory: true)
+}

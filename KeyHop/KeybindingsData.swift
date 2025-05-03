@@ -1,5 +1,4 @@
 //
-//  ApplicationModel.swift
 //  KeyHop
 //
 //  Created by Devin AI on 2025-05-02.
@@ -9,7 +8,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class ApplicationModel {
+final class KeybindingsData {
     var applicationPath: String
     var keybindings: String
     
