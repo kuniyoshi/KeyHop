@@ -10,6 +10,7 @@ struct KeybindingsDataView: View {
     @Query private var keybindingsData: [KeybindingsData]
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    @State private var editMode: EditMode = .inactive
     
     var body: some View {
         NavigationSplitView {
@@ -24,6 +25,7 @@ struct KeybindingsDataView: View {
                 .onDelete(perform: deleteItems)
                 .onMove(perform: moveItems)
             }
+            .environment(\.editMode, $editMode)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
             .toolbar {
                 ToolbarItem {
@@ -31,8 +33,12 @@ struct KeybindingsDataView: View {
                         Label("Add Item", systemImage: "plus")
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
+                ToolbarItem {
+                    Button(action: {
+                        editMode = editMode == .active ? .inactive : .active
+                    }) {
+                        Label("Edit", systemImage: "pencil")
+                    }
                 }
             }
         } detail: {
