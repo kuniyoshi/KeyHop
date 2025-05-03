@@ -1,10 +1,3 @@
-//
-//  KeyHopApp.swift
-//  KeyHop
-//
-//  Created by Koji Kuniyoshi on 2025-05-01.
-//
-
 import SwiftUI
 import SwiftData
 
@@ -12,7 +5,6 @@ import SwiftData
 struct KeyHopApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
             KeybindingsData.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
@@ -26,16 +18,7 @@ struct KeyHopApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TabView {
-                ContentView()
-                    .tabItem {
-                        Label("Items", systemImage: "list.bullet")
-                    }
-                KeybindingsDataView()
-                    .tabItem {
-                        Label("Keybindings", systemImage: "keyboard")
-                    }
-            }
+            ContentView()
         }
         .modelContainer(sharedModelContainer)
     }
