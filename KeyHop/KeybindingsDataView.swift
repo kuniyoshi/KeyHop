@@ -10,7 +10,7 @@ struct KeybindingsDataView: View {
     @Query private var keybindingsData: [KeybindingsData]
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    @State private var editMode: EditMode = .inactive
+    @State private var isEditing = false
     
     var body: some View {
         NavigationSplitView {
@@ -25,7 +25,6 @@ struct KeybindingsDataView: View {
                 .onDelete(perform: deleteItems)
                 .onMove(perform: moveItems)
             }
-            .environment(\.editMode, $editMode)
             .navigationSplitViewColumnWidth(min: 180, ideal: 200)
             .toolbar {
                 ToolbarItem {
@@ -35,7 +34,7 @@ struct KeybindingsDataView: View {
                 }
                 ToolbarItem {
                     Button(action: {
-                        editMode = editMode == .active ? .inactive : .active
+                        isEditing.toggle()
                     }) {
                         Label("Edit", systemImage: "pencil")
                     }
@@ -53,39 +52,23 @@ struct KeybindingsDataView: View {
     
     private func addItem() {
         withAnimation {
-            do {
-                let newItem = KeybindingsData(applicationPath: "New Application", keybindings: "")
-                modelContext.insert(newItem)
-            } catch {
-                errorMessage = "Failed to add item: \(error.localizedDescription)"
-                showErrorAlert = true
-            }
+            let newItem = KeybindingsData(applicationPath: "New Application", keybindings: "")
+            modelContext.insert(newItem)
         }
     }
     
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
-            do {
-                for index in offsets {
-                    modelContext.delete(keybindingsData[index])
-                }
-            } catch {
-                errorMessage = "Failed to delete item: \(error.localizedDescription)"
-                showErrorAlert = true
+            for index in offsets {
+                modelContext.delete(keybindingsData[index])
             }
         }
     }
     
     private func moveItems(from source: IndexSet, to destination: Int) {
         withAnimation {
-            do {
-                var updatedItems = keybindingsData
-                updatedItems.move(fromOffsets: source, toOffset: destination)
-                
-            } catch {
-                errorMessage = "Failed to move item: \(error.localizedDescription)"
-                showErrorAlert = true
-            }
+            var updatedItems = keybindingsData
+            updatedItems.move(fromOffsets: source, toOffset: destination)
         }
     }
 }
@@ -127,7 +110,9 @@ struct KeybindingsDataDetailView: View {
     }
 }
 
-#Preview {
-    KeybindingsDataView()
-        .modelContainer(for: KeybindingsData.self, inMemory: true)
+struct KeybindingsDataView_Previews: PreviewProvider {
+    static var previews: some View {
+        KeybindingsDataView()
+            .modelContainer(for: KeybindingsData.self, inMemory: true)
+    }
 }
