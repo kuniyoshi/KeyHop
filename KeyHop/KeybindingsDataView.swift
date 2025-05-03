@@ -53,7 +53,7 @@ struct KeybindingsDataView: View {
     
     private func addItem() {
         withAnimation {
-            let newItem = KeybindingsData(applicationPath: "New Application", keybindings: "")
+            let newItem = KeybindingsData(applicationPath: "/Applications/kitty.app", keybindings: "Opt-Command-T")
             modelContext.insert(newItem)
         }
     }

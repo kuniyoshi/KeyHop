@@ -15,6 +15,10 @@ struct KeyHopApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
+    
+    init() {
+        HotkeyManager.shared.start()
+    }
 
     var body: some Scene {
         WindowGroup {
