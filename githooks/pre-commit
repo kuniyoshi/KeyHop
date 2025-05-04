@@ -5,7 +5,7 @@ FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.swift$')
 
 for file in $FILES; do
   # 行末スペース削除 + 空白のみの行を空行に変換
-  perl -i -pe 's/\s+$//' "$file"
+  perl -i -lpe 's/\s+$//' "$file"
 
   # 再ステージ
   git add "$file"
