@@ -48,3 +48,8 @@ xcodebuild test -scheme KeyHop -destination platform=macOS
 1. Copy App
 1. Run a command to create DMG: `create-dmg KeyHop.dmg KeyHop.v0.0.1/KeyHop.app`
 
+# Devin setup
+
+## Maintain Dependencies
+
+`cd ~/repos/KeyHop && git config core.hooksPath githooks`
