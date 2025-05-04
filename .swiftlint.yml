@@ -1,8 +1,13 @@
 # .swiftlint.yml
 
+disabled_rules:
+  - multiple_closures_with_trailing_closure
+  - trailing_comma
+  - static_over_final_class
+
 opt_in_rules:
   - trailing_whitespace
   - vertical_whitespace
 
 trailing_whitespace:
-  ignores_empty_lines: false  # ← ここがポイント！
+  ignores_empty_lines: false
