@@ -17,9 +17,9 @@ struct KeybindingsDataDetailView: View {
                     Button(action: {
                         let panel = NSOpenPanel()
                         panel.allowsMultipleSelection = false
-                        panel.canChooseDirectories = false
+                        panel.canChooseDirectories = true
                         panel.canChooseFiles = true
-                        panel.allowedContentTypes = [UTType(filenameExtension: "app") ?? .application]
+                        panel.treatsFilePackagesAsDirectories = false
                         
                         if panel.runModal() == .OK {
                             if let url = panel.url {
