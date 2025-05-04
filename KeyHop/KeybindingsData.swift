@@ -4,7 +4,7 @@ import SwiftData
 @Model
 final class KeybindingsData {
     var applicationPath: String
-    @Attribute(.transformable) var modifies: [String]
+    @Attribute(.transformable(by: NSStringArrayTransformer.self)) var modifies: [String]
     var key: String
     var order: Int = 0
 
