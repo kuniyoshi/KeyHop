@@ -56,6 +56,9 @@ struct KeybindingsDataDetailView: View {
         } message: {
             Text(errorMessage)
         }
+        .onChange(of: data) { _, newData in
+            keybindingText = newData.formattedKeybinding
+        }
     }
 
     private func parseKeybinding() {
