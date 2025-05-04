@@ -2,7 +2,7 @@ import Foundation
 import Carbon
 import Cocoa
 
-let kVK_ANSI_T: UInt32 = 0x11 // T key
+let keyCodeAnsiT: UInt32 = 0x11 // T key
 let optionCmdModifiers: UInt32 = (1 << 19) | (1 << 20) // Option (Alt) + Command
 
 class HotkeyManager {
@@ -63,7 +63,12 @@ class HotkeyManager {
         print("HotkeyManager: Stopped global hotkey listener")
     }
 
-    private static func eventCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent, refcon: UnsafeMutableRawPointer?) -> Unmanaged<CGEvent>? {
+    private static func eventCallback(
+        proxy: CGEventTapProxy,
+        type: CGEventType,
+        event: CGEvent,
+        refcon: UnsafeMutableRawPointer?
+    ) -> Unmanaged<CGEvent>? {
         if type == .tapDisabledByTimeout {
             print("Event tap timed out, re-enabling")
             if let tap = HotkeyManager.shared.eventTap {
@@ -79,7 +84,7 @@ class HotkeyManager {
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         let modifiers = event.flags.rawValue & 0xFFFF0000
 
-        if keyCode == kVK_ANSI_T && modifiers == optionCmdModifiers {
+        if keyCode == keyCodeAnsiT && modifiers == optionCmdModifiers {
             print("Hotkey detected: Opt-Command-T")
 
             DispatchQueue.main.async {
