@@ -61,7 +61,9 @@ struct KeybindingsDataDetailView: View {
 
 #Preview {
     let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try? ModelContainer(for: KeybindingsData.self, configurations: config) ?? ModelContainer(for: KeybindingsData.self)
+    guard let container = try? ModelContainer(for: KeybindingsData.self, configurations: config) else {
+        fatalError("Failed to create ModelContainer")
+    }
     let data = KeybindingsData(applicationPath: "Example App", keybindings: "Cmd+Space")
     container.mainContext.insert(data)
     return KeybindingsDataDetailView(data: data)
