@@ -6,11 +6,13 @@ final class KeybindingsData {
     var applicationPath: String
     var modifies: [String]
     var key: String
+    var order: Int = 0
 
     init(applicationPath: String, modifies: [String], key: String) {
         self.applicationPath = applicationPath
         self.modifies = modifies
         self.key = key
+        self.order = 0
     }
 
     convenience init(applicationPath: String, keybindings: String) {
