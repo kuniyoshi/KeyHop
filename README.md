@@ -41,6 +41,12 @@ xcodebuild test -scheme KeyHop -destination platform=macOS
 
 1. git config core.hooksPath githooks
 
+# Lint
+
+```
+swiftlint lint --reporter relative-path
+```
+
 # BUILD AND DISTRIBUTE
 
 1. Archive
