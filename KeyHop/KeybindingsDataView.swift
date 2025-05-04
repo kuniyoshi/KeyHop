@@ -3,7 +3,7 @@ import SwiftData
 
 struct KeybindingsDataView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var keybindingsData: [KeybindingsData]
+    @Query(sort: \KeybindingsData.order) private var keybindingsData: [KeybindingsData]
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     @State private var selectedData: KeybindingsData?
@@ -48,11 +48,13 @@ struct KeybindingsDataView: View {
 
     private func addItem() {
         withAnimation {
+            let newOrder = keybindingsData.isEmpty ? 0 : keybindingsData.count
             let newItem = KeybindingsData(
                 applicationPath: "/Applications/kitty.app",
                 modifies: ["option", "command"],
                 key: "t"
             )
+            newItem.order = newOrder
             modelContext.insert(newItem)
         }
     }
@@ -69,6 +71,17 @@ struct KeybindingsDataView: View {
         withAnimation {
             var updatedItems = keybindingsData
             updatedItems.move(fromOffsets: source, toOffset: destination)
+
+            for (index, item) in updatedItems.enumerated() {
+                item.order = index
+            }
+
+            do {
+                try modelContext.save()
+            } catch {
+                errorMessage = "Failed to reorder items: \(error.localizedDescription)"
+                showErrorAlert = true
+            }
         }
     }
 }

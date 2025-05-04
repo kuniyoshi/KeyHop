@@ -42,9 +42,11 @@ struct KeybindingsDataDetailView: View {
                 }
 
                 TextField("Keybindings", text: $keybindingText)
-                    .onChange(of: keybindingText) {
-                        parseKeybinding()
-                        saveChanges()
+                    .onChange(of: keybindingText) { oldValue, newValue in
+                        if oldValue != newValue {
+                            parseKeybinding()
+                            saveChanges()
+                        }
                     }
             }
         }
@@ -54,26 +56,55 @@ struct KeybindingsDataDetailView: View {
         } message: {
             Text(errorMessage)
         }
+        .onChange(of: data) { _, newData in
+            keybindingText = newData.formattedKeybinding
+        }
     }
 
     private func parseKeybinding() {
         let components = keybindingText.split(separator: "-")
 
+        data.withOption = false
+        data.withCommand = false
+        data.withShift = false
+        data.withControl = false
+
         if components.count > 1 {
-            data.modifies = components.dropLast().map { String($0).lowercased() }
+            let modifiers = components.dropLast().map { String($0).lowercased() }
+            for modifier in modifiers {
+                switch modifier {
+                case "option": data.withOption = true
+                case "command": data.withCommand = true
+                case "shift": data.withShift = true
+                case "control": data.withControl = true
+                default: break
+                }
+            }
             data.key = String(components.last!).lowercased()
         } else if components.count == 1 {
-            data.modifies = []
             data.key = String(components[0]).lowercased()
         }
     }
 
     private func saveChanges() {
         do {
-            try data.modelContext?.save()
+            if let context = data.modelContext {
+                try context.save()
+                print("Changes saved successfully")
+
+                NotificationCenter.default.post(
+                    name: Notification.Name("KeybindingsDataChanged"),
+                    object: nil
+                )
+            } else {
+                print("Warning: Model context is nil")
+                errorMessage = "Failed to save: no model context available"
+                showErrorAlert = true
+            }
         } catch {
             errorMessage = "Failed to save changes: \(error.localizedDescription)"
             showErrorAlert = true
+            print("Error saving changes: \(error)")
         }
     }
 }

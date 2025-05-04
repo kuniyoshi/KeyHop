@@ -13,7 +13,18 @@ class HotkeyManager {
 
     static let shared = HotkeyManager()
 
-    private init() {}
+    private init() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleKeybindingsDataChange),
+            name: Notification.Name("KeybindingsDataChanged"),
+            object: nil
+        )
+    }
+
+    @objc private func handleKeybindingsDataChange() {
+        refreshKeybindingsCache()
+    }
 
     func setModelContainer(_ container: ModelContainer) {
         self.modelContainer = container
