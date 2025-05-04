@@ -1,5 +1,7 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
+import AppKit
 
 struct KeybindingsDataDetailView: View {
     @Bindable var data: KeybindingsData
@@ -9,10 +11,30 @@ struct KeybindingsDataDetailView: View {
     var body: some View {
         Form {
             Section(header: Text("Application Details")) {
-                TextField("Application Path", text: $data.applicationPath)
-                    .onChange(of: data.applicationPath) {
-                        saveChanges()
+                HStack {
+                    TextField("Application Path", text: $data.applicationPath)
+                    
+                    Button(action: {
+                        let panel = NSOpenPanel()
+                        panel.allowsMultipleSelection = false
+                        panel.canChooseDirectories = false
+                        panel.canChooseFiles = true
+                        panel.allowedContentTypes = [UTType(filenameExtension: "app") ?? .application]
+                        
+                        if panel.runModal() == .OK {
+                            if let url = panel.url {
+                                data.applicationPath = url.path
+                                saveChanges()
+                            }
+                        }
+                    }) {
+                        Image(systemName: "folder")
                     }
+                    .help("Browse for application")
+                }
+                .onChange(of: data.applicationPath) {
+                    saveChanges()
+                }
                 
                 TextField("Keybindings", text: $data.keybindings)
                     .onChange(of: data.keybindings) {
