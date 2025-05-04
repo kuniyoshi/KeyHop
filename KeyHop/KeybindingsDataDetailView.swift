@@ -64,12 +64,24 @@ struct KeybindingsDataDetailView: View {
     private func parseKeybinding() {
         let components = keybindingText.split(separator: "-")
 
+        data.withOption = false
+        data.withCommand = false
+        data.withShift = false
+        data.withControl = false
+
         if components.count > 1 {
-            let newModifiers = components.dropLast().map { String($0).lowercased() }
-            data.modifies = newModifiers
+            let modifiers = components.dropLast().map { String($0).lowercased() }
+            for modifier in modifiers {
+                switch modifier {
+                case "option": data.withOption = true
+                case "command": data.withCommand = true
+                case "shift": data.withShift = true
+                case "control": data.withControl = true
+                default: break
+                }
+            }
             data.key = String(components.last!).lowercased()
         } else if components.count == 1 {
-            data.modifies = []
             data.key = String(components[0]).lowercased()
         }
     }

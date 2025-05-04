@@ -4,13 +4,19 @@ import SwiftData
 @Model
 final class KeybindingsData {
     var applicationPath: String
-    @Attribute(.transformable(by: NSStringArrayTransformer.self)) var modifies: [String]
+    var withOption: Bool = false
+    var withCommand: Bool = false
+    var withShift: Bool = false
+    var withControl: Bool = false
     var key: String
     var order: Int = 0
 
     init(applicationPath: String, modifies: [String], key: String) {
         self.applicationPath = applicationPath
-        self.modifies = modifies
+        self.withOption = modifies.contains("option")
+        self.withCommand = modifies.contains("command")
+        self.withShift = modifies.contains("shift")
+        self.withControl = modifies.contains("control")
         self.key = key
         self.order = 0
     }
@@ -30,8 +36,18 @@ final class KeybindingsData {
         self.init(applicationPath: applicationPath, modifies: modifies, key: key)
     }
 
+    var modifies: [String] {
+        var result: [String] = []
+        if withOption { result.append("option") }
+        if withCommand { result.append("command") }
+        if withShift { result.append("shift") }
+        if withControl { result.append("control") }
+        return result
+    }
+
     var formattedKeybinding: String {
-        let modifiersText = modifies.map { $0.capitalized }.joined(separator: "-")
-        return modifies.isEmpty ? key.capitalized : "\(modifiersText)-\(key.capitalized)"
+        let modifiers = modifies
+        let modifiersText = modifiers.map { $0.capitalized }.joined(separator: "-")
+        return modifiers.isEmpty ? key.capitalized : "\(modifiersText)-\(key.capitalized)"
     }
 }
