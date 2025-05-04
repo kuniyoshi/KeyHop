@@ -6,20 +6,20 @@ struct KeybindingsDataDetailView: View {
     @Bindable var data: KeybindingsData
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    
+
     var body: some View {
         Form {
             Section(header: Text("Application Details")) {
                 HStack {
                     TextField("Application Path", text: $data.applicationPath)
-                    
+
                     Button(action: {
                         let panel = NSOpenPanel()
                         panel.allowsMultipleSelection = false
                         panel.canChooseDirectories = true
                         panel.canChooseFiles = true
                         panel.treatsFilePackagesAsDirectories = false
-                        
+
                         if panel.runModal() == .OK {
                             if let url = panel.url {
                                 data.applicationPath = url.path
@@ -34,7 +34,7 @@ struct KeybindingsDataDetailView: View {
                 .onChange(of: data.applicationPath) {
                     saveChanges()
                 }
-                
+
                 TextField("Keybindings", text: $data.keybindings)
                     .onChange(of: data.keybindings) {
                         saveChanges()
@@ -48,7 +48,7 @@ struct KeybindingsDataDetailView: View {
             Text(errorMessage)
         }
     }
-    
+
     private func saveChanges() {
         do {
             try data.modelContext?.save()

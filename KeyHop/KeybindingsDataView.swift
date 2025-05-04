@@ -8,7 +8,7 @@ struct KeybindingsDataView: View {
     @State private var errorMessage = ""
     @State private var isEditing = false
     @State private var selectedData: KeybindingsData?
-    
+
     var body: some View {
         VStack {
             List {
@@ -36,7 +36,7 @@ struct KeybindingsDataView: View {
                     }
                 }
             }
-            
+
             if let selectedData = selectedData {
                 KeybindingsDataDetailView(data: selectedData)
             } else {
@@ -50,14 +50,14 @@ struct KeybindingsDataView: View {
             Text(errorMessage)
         }
     }
-    
+
     private func addItem() {
         withAnimation {
             let newItem = KeybindingsData(applicationPath: "/Applications/kitty.app", keybindings: "Opt-Command-T")
             modelContext.insert(newItem)
         }
     }
-    
+
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
@@ -65,7 +65,7 @@ struct KeybindingsDataView: View {
             }
         }
     }
-    
+
     private func moveItems(from source: IndexSet, to destination: Int) {
         withAnimation {
             var updatedItems = keybindingsData

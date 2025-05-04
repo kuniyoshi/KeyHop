@@ -15,7 +15,7 @@ struct KeyHopApp: App {
             fatalError("Could not create ModelContainer: \(error)")
         }
     }()
-    
+
     init() {
         HotkeyManager.shared.start()
     }
