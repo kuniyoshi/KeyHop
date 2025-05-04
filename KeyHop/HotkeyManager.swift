@@ -24,15 +24,25 @@ class HotkeyManager {
             return []
         }
 
-        let context = modelContainer.mainContext
-        let descriptor = FetchDescriptor<KeybindingsData>()
+        var keybindings: [KeybindingsData] = []
+        let semaphore = DispatchSemaphore(value: 0)
 
-        do {
-            return try context.fetch(descriptor)
-        } catch {
-            print("HotkeyManager: Failed to fetch keybindings: \(error)")
-            return []
+        Task { @MainActor in
+            let context = modelContainer.mainContext
+            let descriptor = FetchDescriptor<KeybindingsData>()
+
+            do {
+                keybindings = try context.fetch(descriptor)
+            } catch {
+                print("HotkeyManager: Failed to fetch keybindings: \(error)")
+            }
+
+            semaphore.signal()
         }
+
+        _ = semaphore.wait(timeout: .now() + 0.1)
+
+        return keybindings
     }
 
     private func keyCodeToString(_ keyCode: Int) -> String? {
@@ -164,7 +174,7 @@ class HotkeyManager {
             return Unmanaged.passRetained(event)
         }
 
-        let modifierStrings = HotkeyManager.shared.modifiersToStrings(modifiers)
+        let modifierStrings = HotkeyManager.shared.modifiersToStrings(UInt32(modifiers))
 
         let keybindings = HotkeyManager.shared.fetchKeybindings()
 
