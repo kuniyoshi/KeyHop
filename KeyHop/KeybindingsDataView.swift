@@ -16,7 +16,10 @@ struct KeybindingsDataView: View {
                     Button(action: {
                         selectedData = data
                     }) {
-                        Text(data.applicationPath)
+                        VStack(alignment: .leading) {
+                            Text(data.applicationPath)
+                            Text(data.formattedKeybinding).font(.caption)
+                        }
                     }
                 }
                 .onDelete(perform: deleteItems)
@@ -53,7 +56,11 @@ struct KeybindingsDataView: View {
 
     private func addItem() {
         withAnimation {
-            let newItem = KeybindingsData(applicationPath: "/Applications/kitty.app", keybindings: "Opt-Command-T")
+            let newItem = KeybindingsData(
+                applicationPath: "/Applications/kitty.app",
+                modifies: ["option", "command"],
+                key: "t"
+            )
             modelContext.insert(newItem)
         }
     }

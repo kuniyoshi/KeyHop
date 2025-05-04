@@ -6,6 +6,12 @@ struct KeybindingsDataDetailView: View {
     @Bindable var data: KeybindingsData
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    @State private var keybindingText: String = ""
+
+    init(data: KeybindingsData) {
+        self.data = data
+        self._keybindingText = State(initialValue: data.formattedKeybinding)
+    }
 
     var body: some View {
         Form {
@@ -35,8 +41,9 @@ struct KeybindingsDataDetailView: View {
                     saveChanges()
                 }
 
-                TextField("Keybindings", text: $data.keybindings)
-                    .onChange(of: data.keybindings) {
+                TextField("Keybindings", text: $keybindingText)
+                    .onChange(of: keybindingText) {
+                        parseKeybinding()
                         saveChanges()
                     }
             }
@@ -46,6 +53,18 @@ struct KeybindingsDataDetailView: View {
             Button("OK", role: .cancel) { }
         } message: {
             Text(errorMessage)
+        }
+    }
+
+    private func parseKeybinding() {
+        let components = keybindingText.split(separator: "-")
+
+        if components.count > 1 {
+            data.modifies = components.dropLast().map { String($0).lowercased() }
+            data.key = String(components.last!).lowercased()
+        } else if components.count == 1 {
+            data.modifies = []
+            data.key = String(components[0]).lowercased()
         }
     }
 
@@ -64,7 +83,7 @@ struct KeybindingsDataDetailView: View {
     guard let container = try? ModelContainer(for: KeybindingsData.self, configurations: config) else {
         fatalError("Failed to create ModelContainer")
     }
-    let data = KeybindingsData(applicationPath: "Example App", keybindings: "Cmd+Space")
+    let data = KeybindingsData(applicationPath: "Example App", modifies: ["cmd"], key: "space")
     container.mainContext.insert(data)
     return KeybindingsDataDetailView(data: data)
         .modelContainer(container)
