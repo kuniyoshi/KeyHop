@@ -8,6 +8,8 @@ class HotkeyManager {
     private var runLoopSource: CFRunLoopSource?
     private var isActive = false
     private var modelContainer: ModelContainer?
+    private var cachedKeybindings: [KeybindingsData] = []
+    private var isRefreshingCache = false
 
     static let shared = HotkeyManager()
 
@@ -16,33 +18,34 @@ class HotkeyManager {
     func setModelContainer(_ container: ModelContainer) {
         self.modelContainer = container
         print("HotkeyManager: Set model container")
+
+        refreshKeybindingsCache()
     }
 
-    private func fetchKeybindings() -> [KeybindingsData] {
-        guard let modelContainer = modelContainer else {
-            print("HotkeyManager: Model container not set")
-            return []
+    private func refreshKeybindingsCache() {
+        guard !isRefreshingCache, let modelContainer = modelContainer else {
+            return
         }
 
-        var keybindings: [KeybindingsData] = []
-        let semaphore = DispatchSemaphore(value: 0)
+        isRefreshingCache = true
 
         Task { @MainActor in
             let context = modelContainer.mainContext
             let descriptor = FetchDescriptor<KeybindingsData>()
 
             do {
-                keybindings = try context.fetch(descriptor)
+                self.cachedKeybindings = try context.fetch(descriptor)
+                print("HotkeyManager: Refreshed keybindings cache with \(self.cachedKeybindings.count) items")
             } catch {
                 print("HotkeyManager: Failed to fetch keybindings: \(error)")
             }
 
-            semaphore.signal()
+            self.isRefreshingCache = false
         }
+    }
 
-        _ = semaphore.wait(timeout: .now() + 0.1)
-
-        return keybindings
+    private func fetchKeybindings() -> [KeybindingsData] {
+        return cachedKeybindings
     }
 
     private func keyCodeToString(_ keyCode: Int) -> String? {
