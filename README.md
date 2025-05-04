@@ -31,21 +31,9 @@ Application launcher for macOS
 簡潔さは OS の変更に追従しやすくなるため、
 将来にわたって機能を維持しやすくなります。
 
-# CI
-
-```
-xcodebuild test -scheme KeyHop -destination platform=macOS
-```
-
 # Setup
 
 1. git config core.hooksPath githooks
-
-# Lint
-
-```
-swiftlint lint --reporter relative-path
-```
 
 # BUILD AND DISTRIBUTE
 
@@ -54,8 +42,24 @@ swiftlint lint --reporter relative-path
 1. Copy App
 1. Run a command to create DMG: `create-dmg KeyHop.dmg KeyHop.v0.0.1/KeyHop.app`
 
-# Devin setup
+# Not for Devin
+
+This section is not for the Devin, just my note.
+Devin don't run this.
 
 ## Maintain Dependencies
 
 `cd ~/repos/KeyHop && git config core.hooksPath githooks`
+
+
+## CI
+
+```
+xcodebuild test -scheme KeyHop -destination platform=macOS
+```
+
+## Lint
+
+```
+swiftlint lint --reporter relative-path
+```
