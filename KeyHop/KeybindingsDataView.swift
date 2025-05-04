@@ -6,7 +6,6 @@ struct KeybindingsDataView: View {
     @Query private var keybindingsData: [KeybindingsData]
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
-    @State private var isEditing = false
     @State private var selectedData: KeybindingsData?
 
     var body: some View {
@@ -29,13 +28,6 @@ struct KeybindingsDataView: View {
                 ToolbarItem {
                     Button(action: addItem) {
                         Label("Add Item", systemImage: "plus")
-                    }
-                }
-                ToolbarItem {
-                    Button(action: {
-                        isEditing.toggle()
-                    }) {
-                        Label("Edit", systemImage: "pencil")
                     }
                 }
             }
