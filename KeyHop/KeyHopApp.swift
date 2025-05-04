@@ -17,6 +17,7 @@ struct KeyHopApp: App {
     }()
 
     init() {
+        HotkeyManager.shared.setModelContainer(sharedModelContainer)
         HotkeyManager.shared.start()
     }
 

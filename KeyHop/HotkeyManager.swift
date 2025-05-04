@@ -1,18 +1,94 @@
 import Foundation
 import Carbon
 import Cocoa
-
-let keyCodeAnsiT: UInt32 = 0x11 // T key
-let optionCmdModifiers: UInt32 = (1 << 19) | (1 << 20) // Option (Alt) + Command
+import SwiftData
 
 class HotkeyManager {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var isActive = false
+    private var modelContainer: ModelContainer?
 
     static let shared = HotkeyManager()
 
     private init() {}
+
+    func setModelContainer(_ container: ModelContainer) {
+        self.modelContainer = container
+        print("HotkeyManager: Set model container")
+    }
+
+    private func fetchKeybindings() -> [KeybindingsData] {
+        guard let modelContainer = modelContainer else {
+            print("HotkeyManager: Model container not set")
+            return []
+        }
+
+        let context = modelContainer.mainContext
+        let descriptor = FetchDescriptor<KeybindingsData>()
+
+        do {
+            return try context.fetch(descriptor)
+        } catch {
+            print("HotkeyManager: Failed to fetch keybindings: \(error)")
+            return []
+        }
+    }
+
+    private func keyCodeToString(_ keyCode: Int) -> String? {
+        let keyMapping: [Int: String] = [
+            0x00: "a",
+            0x0B: "b",
+            0x08: "c",
+            0x02: "d",
+            0x0E: "e",
+            0x03: "f",
+            0x05: "g",
+            0x04: "h",
+            0x22: "i",
+            0x26: "j",
+            0x28: "k",
+            0x25: "l",
+            0x2E: "m",
+            0x2D: "n",
+            0x1F: "o",
+            0x23: "p",
+            0x0C: "q",
+            0x0F: "r",
+            0x01: "s",
+            0x11: "t",
+            0x20: "u",
+            0x09: "v",
+            0x0D: "w",
+            0x07: "x",
+            0x10: "y",
+            0x06: "z",
+        ]
+
+        return keyMapping[Int(keyCode)]
+    }
+
+    private func modifiersToStrings(_ modifierFlags: UInt32) -> [String] {
+        var modifiers: [String] = []
+
+        if (modifierFlags & (1 << 19)) != 0 { // Command
+            modifiers.append("command")
+        }
+
+        if (modifierFlags & (1 << 20)) != 0 { // Option (Alt)
+            modifiers.append("option")
+        }
+
+        if (modifierFlags & (1 << 17)) != 0 { // Shift
+            modifiers.append("shift")
+        }
+
+        if (modifierFlags & (1 << 18)) != 0 { // Control
+            modifiers.append("control")
+        }
+
+        return modifiers
+    }
 
     deinit {
         stop()
@@ -84,15 +160,24 @@ class HotkeyManager {
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         let modifiers = event.flags.rawValue & 0xFFFF0000
 
-        if keyCode == keyCodeAnsiT && modifiers == optionCmdModifiers {
-            print("Hotkey detected: Opt-Command-T")
+        guard let keyString = HotkeyManager.shared.keyCodeToString(Int(keyCode)) else {
+            return Unmanaged.passRetained(event)
+        }
 
-            DispatchQueue.main.async {
-                let kittyAppPath = "/Applications/kitty.app"
-                NSWorkspace.shared.open(URL(fileURLWithPath: kittyAppPath))
+        let modifierStrings = HotkeyManager.shared.modifiersToStrings(modifiers)
+
+        let keybindings = HotkeyManager.shared.fetchKeybindings()
+
+        for binding in keybindings {
+            if binding.key == keyString && Set(binding.modifies) == Set(modifierStrings) {
+                print("Hotkey detected: \(binding.formattedKeybinding) for \(binding.applicationPath)")
+
+                DispatchQueue.main.async {
+                    NSWorkspace.shared.open(URL(fileURLWithPath: binding.applicationPath))
+                }
+
+                return nil // Consume the event
             }
-
-            return nil
         }
 
         return Unmanaged.passRetained(event)
