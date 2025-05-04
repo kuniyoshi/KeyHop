@@ -1,0 +1,8 @@
+# .swiftlint.yml
+
+opt_in_rules:
+  - trailing_whitespace
+  - vertical_whitespace
+
+trailing_whitespace:
+  ignores_empty_lines: false  # ← ここがポイント！
