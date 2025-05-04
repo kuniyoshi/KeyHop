@@ -1,6 +1,5 @@
 import SwiftUI
 import SwiftData
-import UniformTypeIdentifiers
 import AppKit
 
 struct KeybindingsDataDetailView: View {
