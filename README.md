@@ -37,9 +37,14 @@ Application launcher for macOS
 xcodebuild test -scheme KeyHop -destination platform=macOS
 ```
 
+# Setup
+
+1. git config core.hooksPath githooks
+
 # BUILD AND DISTRIBUTE
 
 1. Archive
 1. Distribute App
 1. Copy App
 1. Run a command to create DMG: `create-dmg KeyHop.dmg KeyHop.v0.0.1/KeyHop.app`
+
