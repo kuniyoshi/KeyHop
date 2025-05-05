@@ -150,7 +150,7 @@ struct KeybindingsDataDetailView: View {
     guard let container = try? ModelContainer(for: KeybindingsData.self, configurations: config) else {
         fatalError("Failed to create ModelContainer")
     }
-    let data = KeybindingsData(applicationPath: "Example App", modifies: ["cmd"], key: "space")
+    let data = KeybindingsData(applicationPath: "Example App", modifies: ["command"], key: "space")
     container.mainContext.insert(data)
     return KeybindingsDataDetailView(data: data)
         .modelContainer(container)

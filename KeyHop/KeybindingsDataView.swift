@@ -59,8 +59,8 @@ struct KeybindingsDataView: View {
         withAnimation {
             let newOrder = keybindingsData.isEmpty ? 0 : keybindingsData.count
             let newItem = KeybindingsData(
-                applicationPath: "/Applications/kitty.app",
-                modifies: ["option", "command"],
+                applicationPath: "Example.app",
+                modifies: ["option", "command", "shift", "control"],
                 key: "t"
             )
             newItem.order = newOrder
