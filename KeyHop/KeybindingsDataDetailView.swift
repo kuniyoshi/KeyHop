@@ -4,8 +4,8 @@ import AppKit
 
 struct KeybindingsDataDetailView: View {
     @Bindable var data: KeybindingsData
-    @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    @State private var isValid = true
     @State private var keybindingText: String = ""
 
     init(data: KeybindingsData) {
@@ -29,6 +29,7 @@ struct KeybindingsDataDetailView: View {
                         if panel.runModal() == .OK {
                             if let url = panel.url {
                                 data.applicationPath = url.path
+                                isValid = validateInput()
                                 saveChanges()
                             }
                         }
@@ -38,26 +39,27 @@ struct KeybindingsDataDetailView: View {
                     .help("Browse for application")
                 }
                 .onChange(of: data.applicationPath) {
-                    validateInput()
+                    isValid = validateInput()
                     saveChanges()
+                }
+
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
                 }
 
                 TextField("Keybindings", text: $keybindingText)
                     .onChange(of: keybindingText) { oldValue, newValue in
                         if oldValue != newValue {
                             parseKeybinding()
-                            validateInput()
+                            isValid = validateInput()
                             saveChanges()
                         }
                     }
             }
         }
         .navigationTitle("Edit Keybinding")
-        .alert("Error", isPresented: $showErrorAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(errorMessage)
-        }
         .onChange(of: data) { _, newData in
             keybindingText = newData.formattedKeybinding
         }
@@ -93,33 +95,25 @@ struct KeybindingsDataDetailView: View {
 
         if !data.applicationPath.lowercased().hasSuffix(".app") {
             errorMessage = "Application path must end with .app"
-            showErrorAlert = true
             return false
         }
 
         if data.modifies.isEmpty {
             errorMessage = "Keybindings must include at least one modifier (Option, Command, Shift, or Control)"
-            showErrorAlert = true
             return false
         }
 
         if data.key.isEmpty {
             errorMessage = "Keybindings must include a key"
-            showErrorAlert = true
             return false
         }
 
-        if data.key.count > 1 {
-            errorMessage = "Keybindings must include only one key"
-            showErrorAlert = true
-            return false
-        }
 
         return true
     }
 
     private func saveChanges() {
-        if !validateInput() {
+        if !isValid {
             return
         }
 
@@ -135,11 +129,9 @@ struct KeybindingsDataDetailView: View {
             } else {
                 print("Warning: Model context is nil")
                 errorMessage = "Failed to save: no model context available"
-                showErrorAlert = true
             }
         } catch {
             errorMessage = "Failed to save changes: \(error.localizedDescription)"
-            showErrorAlert = true
             print("Error saving changes: \(error)")
         }
     }
