@@ -42,6 +42,7 @@ struct KeybindingsDataView: View {
 
             if let selectedData = selectedData {
                 KeybindingsDataDetailView(data: selectedData)
+                    .padding()
             } else {
                 Text("Select an item")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
