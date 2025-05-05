@@ -6,6 +6,7 @@ struct KeybindingsDataDetailView: View {
     @Bindable var data: KeybindingsData
     @State private var errorMessage = ""
     @State private var isValid = true
+    @State private var showErrorAlert = false
     @State private var keybindingText: String = ""
 
     init(data: KeybindingsData) {
@@ -60,6 +61,11 @@ struct KeybindingsDataDetailView: View {
             }
         }
         .navigationTitle("Edit Keybinding")
+        .alert("Error", isPresented: $showErrorAlert) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(errorMessage)
+        }
         .onChange(of: data) { _, newData in
             keybindingText = newData.formattedKeybinding
         }
@@ -72,21 +78,17 @@ struct KeybindingsDataDetailView: View {
         data.withCommand = false
         data.withShift = false
         data.withControl = false
+        data.key = ""
 
-        if components.count > 1 {
-            let modifiers = components.dropLast().map { String($0).lowercased() }
-            for modifier in modifiers {
-                switch modifier {
-                case "option": data.withOption = true
-                case "command": data.withCommand = true
-                case "shift": data.withShift = true
-                case "control": data.withControl = true
-                default: break
-                }
+        for component in components.map({ String($0).lowercased() }) {
+            switch component {
+            case "option": data.withOption = true
+            case "command": data.withCommand = true
+            case "shift": data.withShift = true
+            case "control": data.withControl = true
+            default:
+                data.key = component
             }
-            data.key = String(components.last!).lowercased()
-        } else if components.count == 1 {
-            data.key = String(components[0]).lowercased()
         }
     }
 
@@ -129,9 +131,11 @@ struct KeybindingsDataDetailView: View {
             } else {
                 print("Warning: Model context is nil")
                 errorMessage = "Failed to save: no model context available"
+                showErrorAlert = true
             }
         } catch {
             errorMessage = "Failed to save changes: \(error.localizedDescription)"
+            showErrorAlert = true
             print("Error saving changes: \(error)")
         }
     }
