@@ -1,9 +1,12 @@
 import SwiftUI
 import SwiftData
+import AppKit
 
 @main
 struct KeyHopApp: App {
-    var sharedModelContainer: ModelContainer = {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    static var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             KeybindingsData.self,
         ])
@@ -17,16 +20,13 @@ struct KeyHopApp: App {
     }()
 
     init() {
-        HotkeyManager.shared.setModelContainer(sharedModelContainer)
+        HotkeyManager.shared.setModelContainer(Self.sharedModelContainer)
         HotkeyManager.shared.start()
     }
 
     var body: some Scene {
-        MenuBarExtra("KeyHop", systemImage: "command") {
-            ContentView()
-                .frame(width: 400, height: 600)
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.window)
-        .modelContainer(sharedModelContainer)
     }
 }
