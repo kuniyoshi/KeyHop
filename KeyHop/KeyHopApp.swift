@@ -1,9 +1,12 @@
 import SwiftUI
 import SwiftData
+import AppKit
 
 @main
 struct KeyHopApp: App {
-    var sharedModelContainer: ModelContainer = {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
+
+    static var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             KeybindingsData.self,
         ])
@@ -17,14 +20,13 @@ struct KeyHopApp: App {
     }()
 
     init() {
-        HotkeyManager.shared.setModelContainer(sharedModelContainer)
+        HotkeyManager.shared.setModelContainer(Self.sharedModelContainer)
         HotkeyManager.shared.start()
     }
 
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        Settings {
+            EmptyView()
         }
-        .modelContainer(sharedModelContainer)
     }
 }
