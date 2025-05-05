@@ -100,7 +100,7 @@ struct KeybindingsDataDetailView: View {
             return false
         }
 
-        if data.modifies.isEmpty {
+        if data.modifiers.isEmpty {
             errorMessage = "Keybindings must include at least one modifier (Option, Command, Shift, or Control)"
             return false
         }

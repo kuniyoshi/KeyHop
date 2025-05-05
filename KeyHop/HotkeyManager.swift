@@ -189,7 +189,7 @@ class HotkeyManager {
         let keybindings = HotkeyManager.shared.fetchKeybindings()
 
         for binding in keybindings {
-            if binding.key == keyString && Set(binding.modifies) == Set(modifierStrings) {
+            if binding.key == keyString && Set(binding.modifiers) == Set(modifierStrings) {
                 print("Hotkey detected: \(binding.formattedKeybinding) for \(binding.applicationPath)")
 
                 DispatchQueue.main.async {

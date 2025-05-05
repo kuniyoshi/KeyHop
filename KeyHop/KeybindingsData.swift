@@ -36,7 +36,7 @@ final class KeybindingsData {
         self.init(applicationPath: applicationPath, modifies: modifies, key: key)
     }
 
-    var modifies: [String] {
+    var modifiers: [String] {
         var result: [String] = []
         if withOption { result.append("option") }
         if withCommand { result.append("command") }
@@ -46,7 +46,7 @@ final class KeybindingsData {
     }
 
     var formattedKeybinding: String {
-        let modifiers = modifies
+        let modifiers = modifiers
         let modifiersText = modifiers.map { $0.capitalized }.joined(separator: "-")
         return modifiers.isEmpty ? key.capitalized : "\(modifiersText)-\(key.capitalized)"
     }
