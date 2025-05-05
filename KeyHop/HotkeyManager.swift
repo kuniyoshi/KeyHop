@@ -92,22 +92,19 @@ class HotkeyManager {
         return keyMapping[Int(keyCode)]
     }
 
-    private func modifiersToStrings(_ modifierFlags: UInt32) -> [String] {
+    private func modifiersToStrings(_ flags: CGEventFlags) -> [String] {
         var modifiers: [String] = []
 
-        if (modifierFlags & (1 << 19)) != 0 { // Command
+        if flags.contains(.maskCommand) {
             modifiers.append("command")
         }
-
-        if (modifierFlags & (1 << 20)) != 0 { // Option (Alt)
+        if flags.contains(.maskAlternate) {
             modifiers.append("option")
         }
-
-        if (modifierFlags & (1 << 17)) != 0 { // Shift
+        if flags.contains(.maskShift) {
             modifiers.append("shift")
         }
-
-        if (modifierFlags & (1 << 18)) != 0 { // Control
+        if flags.contains(.maskControl) {
             modifiers.append("control")
         }
 
@@ -182,13 +179,12 @@ class HotkeyManager {
         }
 
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        let modifiers = event.flags.rawValue & 0xFFFF0000
+
+        let modifierStrings = HotkeyManager.shared.modifiersToStrings(event.flags)
 
         guard let keyString = HotkeyManager.shared.keyCodeToString(Int(keyCode)) else {
             return Unmanaged.passRetained(event)
         }
-
-        let modifierStrings = HotkeyManager.shared.modifiersToStrings(UInt32(modifiers))
 
         let keybindings = HotkeyManager.shared.fetchKeybindings()
 
