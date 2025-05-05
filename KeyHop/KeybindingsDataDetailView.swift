@@ -16,7 +16,7 @@ struct KeybindingsDataDetailView: View {
 
     var body: some View {
         Form {
-            Section(header: Text("Application Details")) {
+            Section(header: Text("Set keybindings")) {
                 HStack {
                     TextField("Application Path", text: $data.applicationPath)
 
