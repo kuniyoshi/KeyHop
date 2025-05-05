@@ -9,7 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
-            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "KeyHop")
+            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String)
             button.action = #selector(toggleWindow)
             button.target = self
         }
@@ -25,15 +25,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if window == nil {
             let contentView = ContentView()
                 .environment(\.modelContext, KeyHopApp.sharedModelContainer.mainContext)
-            window = NSWindow(
+            let newWindow = NSWindow(
                 contentRect: NSRect(x: 0, y: 0, width: 400, height: 520),
                 styleMask: [.titled, .closable, .miniaturizable],
                 backing: .buffered,
                 defer: false
             )
-            window!.isReleasedWhenClosed = false
-            window!.title = "KeyHop"
-            window!.contentView = NSHostingView(rootView: contentView)
+            newWindow.isReleasedWhenClosed = false
+            newWindow.title = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String ?? "App"
+            newWindow.contentView = NSHostingView(rootView: contentView)
+            window = newWindow
         }
 
         window!.center()
