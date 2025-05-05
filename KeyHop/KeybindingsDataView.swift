@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import AppKit
 
 struct KeybindingsDataView: View {
     @Environment(\.modelContext) private var modelContext
@@ -15,10 +16,17 @@ struct KeybindingsDataView: View {
                     Button(action: {
                         selectedData = data
                     }) {
-                        VStack(alignment: .leading) {
-                            Text(data.applicationPath)
-                            Text(data.formattedKeybinding).font(.caption)
+                        HStack {
+                            Image(nsImage: NSWorkspace.shared.icon(forFile: data.applicationPath))
+                                .resizable()
+                                .frame(width: 24, height: 24)
+
+                            VStack(alignment: .leading) {
+                                Text(data.applicationPath)
+                                Text(data.formattedKeybinding).font(.caption)
+                            }
                         }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
                 .onDelete(perform: deleteItems)

@@ -4,8 +4,9 @@ import AppKit
 
 struct KeybindingsDataDetailView: View {
     @Bindable var data: KeybindingsData
-    @State private var showErrorAlert = false
     @State private var errorMessage = ""
+    @State private var isValid = true
+    @State private var showErrorAlert = false
     @State private var keybindingText: String = ""
 
     init(data: KeybindingsData) {
@@ -29,6 +30,7 @@ struct KeybindingsDataDetailView: View {
                         if panel.runModal() == .OK {
                             if let url = panel.url {
                                 data.applicationPath = url.path
+                                isValid = validateInput()
                                 saveChanges()
                             }
                         }
@@ -38,13 +40,21 @@ struct KeybindingsDataDetailView: View {
                     .help("Browse for application")
                 }
                 .onChange(of: data.applicationPath) {
+                    isValid = validateInput()
                     saveChanges()
+                }
+
+                if !errorMessage.isEmpty {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(.caption)
                 }
 
                 TextField("Keybindings", text: $keybindingText)
                     .onChange(of: keybindingText) { oldValue, newValue in
                         if oldValue != newValue {
                             parseKeybinding()
+                            isValid = validateInput()
                             saveChanges()
                         }
                     }
@@ -68,25 +78,51 @@ struct KeybindingsDataDetailView: View {
         data.withCommand = false
         data.withShift = false
         data.withControl = false
+        data.key = ""
 
-        if components.count > 1 {
-            let modifiers = components.dropLast().map { String($0).lowercased() }
-            for modifier in modifiers {
-                switch modifier {
-                case "option": data.withOption = true
-                case "command": data.withCommand = true
-                case "shift": data.withShift = true
-                case "control": data.withControl = true
-                default: break
-                }
+        for component in components.map({ String($0).lowercased() }) {
+            switch component {
+            case "option": data.withOption = true
+            case "command": data.withCommand = true
+            case "shift": data.withShift = true
+            case "control": data.withControl = true
+            default:
+                data.key = component
             }
-            data.key = String(components.last!).lowercased()
-        } else if components.count == 1 {
-            data.key = String(components[0]).lowercased()
         }
     }
 
+    private func validateInput() -> Bool {
+        errorMessage = ""
+
+        if !data.applicationPath.lowercased().hasSuffix(".app") {
+            errorMessage = "Application path must end with .app"
+            return false
+        }
+
+        if data.modifies.isEmpty {
+            errorMessage = "Keybindings must include at least one modifier (Option, Command, Shift, or Control)"
+            return false
+        }
+
+        if data.key.isEmpty {
+            errorMessage = "Keybindings must include a key"
+            return false
+        }
+
+        if data.key.count > 1 {
+            errorMessage = "Keybindings can only have one key"
+            return false
+        }
+
+        return true
+    }
+
     private func saveChanges() {
+        if !isValid {
+            return
+        }
+
         do {
             if let context = data.modelContext {
                 try context.save()
