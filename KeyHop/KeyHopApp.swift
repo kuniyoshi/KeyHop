@@ -22,9 +22,11 @@ struct KeyHopApp: App {
     }
 
     var body: some Scene {
-        WindowGroup {
+        MenuBarExtra("KeyHop", systemImage: "command") {
             ContentView()
+                .frame(width: 400, height: 600)
         }
+        .menuBarExtraStyle(.window)
         .modelContainer(sharedModelContainer)
     }
 }
