@@ -18,7 +18,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     @objc
     private func toggleWindow() {
         if let window = window, window.isVisible {
-            window.orderOut(nil)                 // すでに表示中なら隠す
+            window.orderOut(nil) // すでに表示中なら隠す
             return
         }
 
