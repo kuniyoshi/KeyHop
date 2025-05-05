@@ -110,6 +110,10 @@ struct KeybindingsDataDetailView: View {
             return false
         }
 
+        if data.key.count > 1 {
+            errorMessage = "Keybindings can only have one key"
+            return false
+        }
 
         return true
     }
