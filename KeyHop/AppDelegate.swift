@@ -10,8 +10,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
             button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String)
-            button.action = #selector(toggleWindow)
-            button.target = self
+            let menu = NSMenu()
+            menu.addItem(NSMenuItem(title: "Edit…", action: #selector(showWindow), keyEquivalent: "e"))
+            menu.addItem(NSMenuItem.separator())
+            menu.addItem(NSMenuItem(title: "Quit", action: #selector(quitApp), keyEquivalent: "q"))
+            statusItem?.menu = menu
         }
     }
 
@@ -40,5 +43,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         window!.center()
         window!.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    @objc
+    private func showWindow() {
+        toggleWindow()
+    }
+
+    @objc
+    private func quitApp() {
+        NSApp.terminate(nil)
     }
 }
