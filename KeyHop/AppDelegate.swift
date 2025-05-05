@@ -9,7 +9,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
-            button.image = NSImage(systemSymbolName: "hare.fill", accessibilityDescription: Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String)
+            button.image = NSImage(
+                systemSymbolName: "hare.fill",
+                accessibilityDescription: Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as? String
+            )
             let menu = NSMenu()
             menu.addItem(NSMenuItem(title: "Edit…", action: #selector(showWindow), keyEquivalent: "e"))
             menu.addItem(NSMenuItem.separator())
