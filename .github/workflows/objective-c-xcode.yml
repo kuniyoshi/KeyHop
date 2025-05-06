@@ -12,6 +12,8 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Show installed Xcodes
+        run: ls /Applications | grep Xcode
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set Default Scheme
