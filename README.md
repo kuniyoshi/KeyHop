@@ -51,11 +51,6 @@ Devin don't run this.
 
 `cd ~/repos/KeyHop && git config core.hooksPath githooks`
 
-# TODO
-
-- Make background
-- Reorder item
-
 ## CI
 
 ```
