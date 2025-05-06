@@ -1,5 +1,7 @@
 # KeyHop
 
+[![Xcode - Build and Analyze](https://github.com/kuniyoshi/KeyHop/actions/workflows/objective-c-xcode.yml/badge.svg)](https://github.com/kuniyoshi/KeyHop/actions/workflows/objective-c-xcode.yml)
+
 Application launcher for macOS
 
 # Usage
