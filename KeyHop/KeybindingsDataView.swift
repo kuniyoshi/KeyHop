@@ -20,10 +20,13 @@ struct KeybindingsDataView: View {
                             Image(nsImage: NSWorkspace.shared.icon(forFile: data.applicationPath))
                                 .resizable()
                                 .frame(width: 24, height: 24)
+                                .opacity(data.isEnabled ? 1.0 : 0.5)
 
                             VStack(alignment: .leading) {
                                 Text(data.applicationPath)
+                                    .opacity(data.isEnabled ? 1.0 : 0.5)
                                 Text(data.formattedKeybinding).font(.caption)
+                                    .opacity(data.isEnabled ? 1.0 : 0.5)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
