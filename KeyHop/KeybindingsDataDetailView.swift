@@ -17,6 +17,11 @@ struct KeybindingsDataDetailView: View {
     var body: some View {
         Form {
             Section(header: Text("Set keybindings")) {
+                Toggle("Enabled", isOn: $data.isEnabled)
+                    .onChange(of: data.isEnabled) {
+                        saveChanges()
+                    }
+
                 HStack {
                     TextField("Application Path", text: $data.applicationPath)
 

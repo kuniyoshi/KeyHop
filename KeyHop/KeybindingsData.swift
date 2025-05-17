@@ -10,6 +10,7 @@ final class KeybindingsData {
     var withControl: Bool = false
     var key: String
     var order: Int = 0
+    var isEnabled: Bool = true
 
     init(applicationPath: String, modifies: [String], key: String) {
         self.applicationPath = applicationPath
