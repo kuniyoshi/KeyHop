@@ -71,4 +71,8 @@ The project uses a pre-commit hook that automatically:
 - Converts whitespace-only lines to empty lines
 - Re-stages modified files
 
+## Development Notes
+
+- After editing any .swift file, run bin/trim-trailing-whitespace.pl to remove trailing whitespace.
+
 Current version: 0.11.0 (based on distribution bundle)
