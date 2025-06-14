@@ -1,6 +1,5 @@
 import Foundation
 import SwiftData
-
 @Model
 final class KeybindingsData {
     var applicationPath: String
@@ -11,7 +10,6 @@ final class KeybindingsData {
     var key: String
     var order: Int = 0
     var isEnabled: Bool = true
-
     init(applicationPath: String, modifies: [String], key: String) {
         self.applicationPath = applicationPath
         self.withOption = modifies.contains("option")
@@ -21,22 +19,18 @@ final class KeybindingsData {
         self.key = key
         self.order = 0
     }
-
     convenience init(applicationPath: String, keybindings: String) {
         let components = keybindings.split(separator: "-")
         var modifies: [String] = []
         var key = ""
-
         if components.count > 1 {
             modifies = components.dropLast().map { $0.lowercased() }
             key = String(components.last!).lowercased()
         } else if components.count == 1 {
             key = String(components[0]).lowercased()
         }
-
         self.init(applicationPath: applicationPath, modifies: modifies, key: key)
     }
-
     var modifiers: [String] {
         var result: [String] = []
         if withOption { result.append("option") }
@@ -45,7 +39,6 @@ final class KeybindingsData {
         if withControl { result.append("control") }
         return result
     }
-
     var formattedKeybinding: String {
         let modifiers = modifiers
         let modifiersText = modifiers.map { $0.capitalized }.joined(separator: "-")

@@ -1,15 +1,11 @@
 import Foundation
 import ServiceManagement
-
 class LoginItemManager: ObservableObject {
     static let shared = LoginItemManager()
-
     @Published var isEnabled: Bool = false
-
     private init() {
         checkLoginItemStatus()
     }
-
     func setLoginItem(enabled: Bool) {
         Task { @MainActor in
             do {
@@ -26,7 +22,6 @@ class LoginItemManager: ObservableObject {
             }
         }
     }
-
     private func checkLoginItemStatus() {
         switch SMAppService.mainApp.status {
         case .enabled:

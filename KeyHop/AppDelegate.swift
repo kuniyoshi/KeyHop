@@ -1,14 +1,11 @@
 import SwiftUI
 import AppKit
-
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var statusItem: NSStatusItem?
     private var window: NSWindow?
-
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         if let button = statusItem?.button {
             button.image = NSImage(
@@ -22,14 +19,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             statusItem?.menu = menu
         }
     }
-
     @objc
     private func toggleWindow() {
         if let window = window, window.isVisible {
             window.orderOut(nil) // すでに表示中なら隠す
             return
         }
-
         if window == nil {
             let contentView = ContentView()
                 .environment(\.modelContext, KeyHopApp.sharedModelContainer.mainContext)
@@ -44,17 +39,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             newWindow.contentView = NSHostingView(rootView: contentView)
             window = newWindow
         }
-
         window!.center()
         window!.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
-
     @objc
     private func showWindow() {
         toggleWindow()
     }
-
     @objc
     private func quitApp() {
         NSApp.terminate(nil)

@@ -2,7 +2,6 @@ import Foundation
 import Carbon
 import Cocoa
 import SwiftData
-
 class HotkeyManager {
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
@@ -10,9 +9,7 @@ class HotkeyManager {
     private var modelContainer: ModelContainer?
     private var cachedKeybindings: [KeybindingsData] = []
     private var isRefreshingCache = false
-
     static let shared = HotkeyManager()
-
     private init() {
         NotificationCenter.default.addObserver(
             self,
@@ -21,44 +18,34 @@ class HotkeyManager {
             object: nil
         )
     }
-
     @objc private func handleKeybindingsDataChange() {
         refreshKeybindingsCache()
     }
-
     func setModelContainer(_ container: ModelContainer) {
         self.modelContainer = container
         print("HotkeyManager: Set model container")
-
         refreshKeybindingsCache()
     }
-
     private func refreshKeybindingsCache() {
         guard !isRefreshingCache, let modelContainer = modelContainer else {
             return
         }
-
         isRefreshingCache = true
-
         Task { @MainActor in
             let context = modelContainer.mainContext
             let descriptor = FetchDescriptor<KeybindingsData>()
-
             do {
                 self.cachedKeybindings = try context.fetch(descriptor)
                 print("HotkeyManager: Refreshed keybindings cache with \(self.cachedKeybindings.count) items")
             } catch {
                 print("HotkeyManager: Failed to fetch keybindings: \(error)")
             }
-
             self.isRefreshingCache = false
         }
     }
-
     private func fetchKeybindings() -> [KeybindingsData] {
         return cachedKeybindings
     }
-
     private func keyCodeToString(_ keyCode: Int) -> String? {
         let keyMapping: [Int: String] = [
             0x00: "a",
@@ -88,13 +75,10 @@ class HotkeyManager {
             0x10: "y",
             0x06: "z",
         ]
-
         return keyMapping[Int(keyCode)]
     }
-
     private func modifiersToStrings(_ flags: CGEventFlags) -> [String] {
         var modifiers: [String] = []
-
         if flags.contains(.maskCommand) {
             modifiers.append("command")
         }
@@ -107,19 +91,14 @@ class HotkeyManager {
         if flags.contains(.maskControl) {
             modifiers.append("control")
         }
-
         return modifiers
     }
-
     deinit {
         stop()
     }
-
     func start() {
         if isActive { return }
-
         let eventMask = (1 << CGEventType.keyDown.rawValue)
-
         guard let tap = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
             place: .headInsertEventTap,
@@ -133,33 +112,22 @@ class HotkeyManager {
             print("Failed to create event tap")
             return
         }
-
         eventTap = tap
-
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
-
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
-
         CGEvent.tapEnable(tap: tap, enable: true)
-
         isActive = true
         print("HotkeyManager: Started global hotkey listener")
     }
-
     func stop() {
         guard isActive, let tap = eventTap, let source = runLoopSource else { return }
-
         CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
-
         CGEvent.tapEnable(tap: tap, enable: false)
-
         eventTap = nil
         runLoopSource = nil
         isActive = false
-
         print("HotkeyManager: Stopped global hotkey listener")
     }
-
     private static func eventCallback(
         proxy: CGEventTapProxy,
         type: CGEventType,
@@ -173,33 +141,24 @@ class HotkeyManager {
             }
             return Unmanaged.passRetained(event)
         }
-
         if type != .keyDown {
             return Unmanaged.passRetained(event)
         }
-
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-
         let modifierStrings = HotkeyManager.shared.modifiersToStrings(event.flags)
-
         guard let keyString = HotkeyManager.shared.keyCodeToString(Int(keyCode)) else {
             return Unmanaged.passRetained(event)
         }
-
         let keybindings = HotkeyManager.shared.fetchKeybindings()
-
         for binding in keybindings {
             if binding.key == keyString && Set(binding.modifiers) == Set(modifierStrings) && binding.isEnabled {
                 print("Hotkey detected: \(binding.formattedKeybinding) for \(binding.applicationPath)")
-
                 DispatchQueue.main.async {
                     NSWorkspace.shared.open(URL(fileURLWithPath: binding.applicationPath))
                 }
-
                 return nil // Consume the event
             }
         }
-
         return Unmanaged.passRetained(event)
     }
 }

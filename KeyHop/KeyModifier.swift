@@ -1,11 +1,9 @@
 import Foundation
-
 enum KeyModifier: String, CaseIterable {
     case option
     case command
     case shift
     case control
-
     var displayName: String {
         switch self {
         case .option: return "Option"

@@ -1,7 +1,6 @@
 import SwiftUI
 import SwiftData
 import AppKit
-
 struct KeybindingsDataView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \KeybindingsData.order) private var keybindingsData: [KeybindingsData]
@@ -9,7 +8,6 @@ struct KeybindingsDataView: View {
     @State private var errorMessage = ""
     @State private var selectedData: KeybindingsData?
     @StateObject private var loginItemManager = LoginItemManager.shared
-
     var body: some View {
         VStack {
             VStack(spacing: 8) {
@@ -18,7 +16,6 @@ struct KeybindingsDataView: View {
                         .font(.headline)
                     Spacer()
                 }
-
                 HStack {
                     Toggle("Launch at login", isOn: Binding(
                         get: { loginItemManager.isEnabled },
@@ -28,12 +25,10 @@ struct KeybindingsDataView: View {
                     ))
                     Spacer()
                 }
-
                 Divider()
             }
             .padding(.horizontal)
             .padding(.top, 8)
-
             List {
                 ForEach(keybindingsData) { data in
                     Button(action: {
@@ -44,7 +39,6 @@ struct KeybindingsDataView: View {
                                 .resizable()
                                 .frame(width: 24, height: 24)
                                 .opacity(data.isEnabled ? 1.0 : 0.5)
-
                             VStack(alignment: .leading) {
                                 Text(data.applicationPath)
                                     .opacity(data.isEnabled ? 1.0 : 0.5)
@@ -65,7 +59,6 @@ struct KeybindingsDataView: View {
                     }
                 }
             }
-
             if let selectedData = selectedData {
                 KeybindingsDataDetailView(data: selectedData)
                     .padding()
@@ -80,7 +73,6 @@ struct KeybindingsDataView: View {
             Text(errorMessage)
         }
     }
-
     private func addItem() {
         withAnimation {
             let newOrder = keybindingsData.isEmpty ? 0 : keybindingsData.count
@@ -93,7 +85,6 @@ struct KeybindingsDataView: View {
             modelContext.insert(newItem)
         }
     }
-
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
@@ -101,16 +92,13 @@ struct KeybindingsDataView: View {
             }
         }
     }
-
     private func moveItems(from source: IndexSet, to destination: Int) {
         withAnimation {
             var updatedItems = keybindingsData
             updatedItems.move(fromOffsets: source, toOffset: destination)
-
             for (index, item) in updatedItems.enumerated() {
                 item.order = index
             }
-
             do {
                 try modelContext.save()
             } catch {
@@ -120,7 +108,6 @@ struct KeybindingsDataView: View {
         }
     }
 }
-
 #Preview {
     KeybindingsDataView()
         .modelContainer(for: KeybindingsData.self, inMemory: true)
