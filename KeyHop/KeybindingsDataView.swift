@@ -8,9 +8,32 @@ struct KeybindingsDataView: View {
     @State private var showErrorAlert = false
     @State private var errorMessage = ""
     @State private var selectedData: KeybindingsData?
+    @StateObject private var loginItemManager = LoginItemManager.shared
 
     var body: some View {
         VStack {
+            VStack(spacing: 8) {
+                HStack {
+                    Text("Settings")
+                        .font(.headline)
+                    Spacer()
+                }
+
+                HStack {
+                    Toggle("Launch at login", isOn: Binding(
+                        get: { loginItemManager.isEnabled },
+                        set: { newValue in
+                            loginItemManager.setLoginItem(enabled: newValue)
+                        }
+                    ))
+                    Spacer()
+                }
+
+                Divider()
+            }
+            .padding(.horizontal)
+            .padding(.top, 8)
+
             List {
                 ForEach(keybindingsData) { data in
                     Button(action: {
